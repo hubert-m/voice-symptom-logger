@@ -46,7 +46,7 @@ export const validateOpenAIApiKey = async (apiKey) => {
 }
 
 export const analyzeTranscription = async (transcriptionText, apiKey) => {
-  const systemPrompt = "Jesteś asystentem medycznym. Przeanalizuj wypowiedź pacjenta i zwróć TYLKO obiekt JSON z trzema polami: 'symptom' (krótka nazwa objawu), 'severity' (liczba od 1 do 10 oceniająca nasilenie) oraz 'notes' (dodatkowe szczegóły). Jeśli brakuje nasilenia, oszacuj je na podstawie kontekstu lub zwróć null.";
+  const systemPrompt = "Jesteś asystentem medycznym. Przeanalizuj wypowiedź pacjenta i zwróć TYLKO obiekt JSON z czterema polami: 'symptom' (krótka nazwa objawu), 'severity' (liczba od 1 do 10 oceniająca nasilenie), 'notes' (dodatkowe szczegóły) oraz 'suggestion' (krótka porada co pacjent może zrobić w tej sytuacji). Jeśli brakuje nasilenia, oszacuj je na podstawie kontekstu lub zwróć null.";
   
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',

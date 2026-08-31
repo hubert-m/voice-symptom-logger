@@ -16,3 +16,8 @@ Aplikacja opiera się na jednym prostym i płynnym obiegu informacji:
 Aby szybko dowieźć w pełni działający i stabilny "core flow" aplikacji z wykorzystaniem zewnętrznych API, zrezygnowano z kilku tradycyjnych elementów architektury:
 - **Brak backendu i tradycyjnej bazy danych:** Dane są przechowywane wyłącznie na urządzeniu użytkownika przy użyciu mechanizmu `LocalStorage`. Dzięki temu aplikacja jest szybsza, nie wymaga skomplikowanej infrastruktury i zachowuje prywatność użytkownika.
 - **Brak autoryzacji:** Aplikacja jest gotowa do użycia natychmiast po uruchomieniu, co zmniejsza barierę wejścia (szczególnie istotne dla osób starszych), jednak oznacza to brak możliwości synchronizacji danych między różnymi urządzeniami.
+
+## 4. Plany rozwoju
+W przyszłości aplikacja może zostać rozbudowana o kolejne kluczowe funkcjonalności:
+- **Przygotowanie backendu z funkcjonalnościami logowania/rejestracji:** Aby umożliwić przypisywanie wpisów do konkretnego konta i ich bezpieczny podgląd na różnych urządzeniach pacjenta.
+- **Podpięcie alternatywnych integracji z możliwością wyboru:** Dodanie integracji takich jak ElevenLabs, Deepgram, czy Groq. Obecnie podpięty jest tylko ekosystem OpenAI.

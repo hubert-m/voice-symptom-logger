@@ -5,6 +5,7 @@ import RecordSection from './components/RecordSection';
 import TranscriptionFeedback from './components/TranscriptionFeedback';
 import SymptomsList from './components/SymptomsList';
 import { transcribeAudio, analyzeTranscription } from './api/openai';
+import { Toaster, toast } from 'react-hot-toast';
 
 export default function App() {
   const [apiKey, setApiKey] = useState('');
@@ -12,7 +13,7 @@ export default function App() {
   const [isInitializing, setIsInitializing] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
-  const [isTranscribing, setIsTranscribing] = useState(false);
+  const [processingStatus, setProcessingStatus] = useState('idle'); // 'idle' | 'transcribing' | 'analyzing'
   const [transcription, setTranscription] = useState('');
   
   const mediaRecorderRef = useRef(null);
@@ -77,7 +78,10 @@ export default function App() {
       setTranscription('');
     } catch (err) {
       console.error("Error accessing microphone:", err);
-      alert("Nie udało się uzyskać dostępu do mikrofonu. Sprawdź uprawnienia przeglądarki.");
+      toast.error("Nie udało się uzyskać dostępu do mikrofonu. Sprawdź uprawnienia przeglądarki.", {
+        duration: 5000,
+        position: 'bottom-center'
+      });
     }
   };
 
@@ -90,15 +94,14 @@ export default function App() {
   };
 
   const handleTranscription = async (audioBlob) => {
-    setIsTranscribing(true);
+    setProcessingStatus('transcribing');
     try {
       const text = await transcribeAudio(audioBlob, apiKey);
       setTranscription(text);
       
-      // Pass the text to Chat Completions
+      setProcessingStatus('analyzing');
       const analyzedData = await analyzeTranscription(text, apiKey);
       
-      // Add the current date to the data
       const newSymptom = {
         ...analyzedData,
         date: new Date().toLocaleString('pl-PL', { 
@@ -108,11 +111,12 @@ export default function App() {
       };
       
       setSymptoms(prev => [newSymptom, ...prev]);
+      toast.success("Zapisano nowy wpis!");
     } catch (err) {
       console.error("Error during processing:", err);
-      alert(`Błąd przetwarzania: ${err.message}`);
+      toast.error(`Błąd przetwarzania: ${err.message}`, { duration: 5000 });
     } finally {
-      setIsTranscribing(false);
+      setProcessingStatus('idle');
     }
   };
 
@@ -130,6 +134,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 font-sans pb-20">
+      <Toaster />
       <Header onOpenSettings={() => setShowSettings(true)} />
 
       <main className="max-w-3xl mx-auto px-4 pt-10 pb-12 space-y-12">
@@ -141,7 +146,7 @@ export default function App() {
         
         <TranscriptionFeedback 
           transcription={transcription} 
-          isTranscribing={isTranscribing} 
+          processingStatus={processingStatus} 
         />
 
         <SymptomsList symptoms={symptoms} />
