@@ -44,3 +44,33 @@ export const validateOpenAIApiKey = async (apiKey) => {
     return false;
   }
 }
+
+export const analyzeTranscription = async (transcriptionText, apiKey) => {
+  const systemPrompt = "Jesteś asystentem medycznym. Przeanalizuj wypowiedź pacjenta i zwróć TYLKO obiekt JSON z trzema polami: 'symptom' (krótka nazwa objawu), 'severity' (liczba od 1 do 10 oceniająca nasilenie) oraz 'notes' (dodatkowe szczegóły). Jeśli brakuje nasilenia, oszacuj je na podstawie kontekstu lub zwróć null.";
+  
+  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`
+    },
+    body: JSON.stringify({
+      model: 'gpt-4o-mini',
+      response_format: { type: 'json_object' },
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: transcriptionText }
+      ],
+      temperature: 0.1
+    })
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error?.message || 'Błąd analizy tekstu');
+  }
+
+  const data = await response.json();
+  const jsonString = data.choices[0].message.content;
+  return JSON.parse(jsonString);
+};

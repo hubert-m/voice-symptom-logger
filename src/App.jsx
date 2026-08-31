@@ -4,7 +4,7 @@ import Header from './components/Header';
 import RecordSection from './components/RecordSection';
 import TranscriptionFeedback from './components/TranscriptionFeedback';
 import SymptomsList from './components/SymptomsList';
-import { transcribeAudio } from './api/openai';
+import { transcribeAudio, analyzeTranscription } from './api/openai';
 
 export default function App() {
   const [apiKey, setApiKey] = useState('');
@@ -94,9 +94,23 @@ export default function App() {
     try {
       const text = await transcribeAudio(audioBlob, apiKey);
       setTranscription(text);
+      
+      // Pass the text to Chat Completions
+      const analyzedData = await analyzeTranscription(text, apiKey);
+      
+      // Add the current date to the data
+      const newSymptom = {
+        ...analyzedData,
+        date: new Date().toLocaleString('pl-PL', { 
+          day: '2-digit', month: '2-digit', year: 'numeric', 
+          hour: '2-digit', minute: '2-digit' 
+        })
+      };
+      
+      setSymptoms(prev => [newSymptom, ...prev]);
     } catch (err) {
-      console.error("Transcription error:", err);
-      alert(`Błąd transkrypcji: ${err.message}`);
+      console.error("Error during processing:", err);
+      alert(`Błąd przetwarzania: ${err.message}`);
     } finally {
       setIsTranscribing(false);
     }

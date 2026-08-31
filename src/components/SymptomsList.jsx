@@ -28,12 +28,19 @@ export default function SymptomsList({ symptoms }) {
           {symptoms.map((symptom, idx) => (
             <div key={idx} className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow group">
                <div className="flex justify-between items-start mb-3">
-                 <span className="font-bold text-slate-800 text-lg leading-tight">{symptom.title || "Nieznany objaw"}</span>
-                 <span className="text-xs font-semibold text-slate-500 bg-slate-100 px-2.5 py-1.5 rounded-lg border border-slate-200">
-                   {symptom.date || "Brak daty"}
-                 </span>
+                 <span className="font-bold text-slate-800 text-lg leading-tight">{symptom.symptom || "Nieznany objaw"}</span>
+                 <div className="flex gap-2">
+                   {symptom.severity && (
+                     <span className="text-xs font-bold text-red-600 bg-red-50 px-2.5 py-1.5 rounded-lg border border-red-100">
+                       Nasilenie: {symptom.severity}/10
+                     </span>
+                   )}
+                   <span className="text-xs font-semibold text-slate-500 bg-slate-100 px-2.5 py-1.5 rounded-lg border border-slate-200">
+                     {symptom.date || "Brak daty"}
+                   </span>
+                 </div>
                </div>
-               <p className="text-slate-600 text-sm leading-relaxed">{symptom.description || "Brak opisu"}</p>
+               <p className="text-slate-600 text-sm leading-relaxed">{symptom.notes || "Brak opisu"}</p>
             </div>
           ))}
         </div>
