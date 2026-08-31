@@ -1,13 +1,28 @@
 import React, { useState } from 'react';
-import { KeyRound, Save, Trash2 } from 'lucide-react';
+import { KeyRound, Save, Trash2, Loader2, AlertCircle } from 'lucide-react';
+import { validateOpenAIApiKey } from '../api/openai';
 
 export default function ApiKeyModal({ apiKey, onSave, onRemove, onCancel }) {
   const [tempApiKey, setTempApiKey] = useState('');
+  const [isValidating, setIsValidating] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
 
-  const handleSave = () => {
-    if (tempApiKey.trim()) {
-      onSave(tempApiKey.trim());
+  const handleSave = async () => {
+    const key = tempApiKey.trim();
+    if (!key) return;
+
+    setErrorMsg('');
+    setIsValidating(true);
+    
+    const isValid = await validateOpenAIApiKey(key);
+    
+    setIsValidating(false);
+    
+    if (isValid) {
+      onSave(key);
       setTempApiKey('');
+    } else {
+      setErrorMsg('Podany klucz jest niepoprawny lub nieważny.');
     }
   };
 
@@ -40,18 +55,32 @@ export default function ApiKeyModal({ apiKey, onSave, onRemove, onCancel }) {
               type="password"
               placeholder="sk-..."
               value={tempApiKey}
-              onChange={(e) => setTempApiKey(e.target.value)}
+              onChange={(e) => {
+                setTempApiKey(e.target.value);
+                if (errorMsg) setErrorMsg('');
+              }}
               className="w-full px-4 py-3.5 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-slate-800 font-mono shadow-sm bg-slate-50"
             />
           </div>
           
+          {errorMsg && (
+            <div className="flex items-center gap-2 text-red-600 bg-red-50 p-3 rounded-xl text-sm font-medium border border-red-100">
+              <AlertCircle className="w-5 h-5 shrink-0" />
+              <p>{errorMsg}</p>
+            </div>
+          )}
+
           <button
             onClick={handleSave}
-            disabled={!tempApiKey.trim()}
+            disabled={!tempApiKey.trim() || isValidating}
             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3.5 px-4 rounded-2xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-md shadow-blue-500/20 active:scale-[0.98]"
           >
-            <Save className="w-5 h-5" />
-            Zapisz klucz i rozpocznij
+            {isValidating ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : (
+              <Save className="w-5 h-5" />
+            )}
+            {isValidating ? 'Weryfikacja klucza...' : 'Zapisz klucz i rozpocznij'}
           </button>
           
           {apiKey && (
