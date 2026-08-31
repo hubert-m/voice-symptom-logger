@@ -2,6 +2,8 @@
 
 Aplikacja pozwalająca na dyktowanie objawów, gdzie sztuczna inteligencja przetwarza mowę na ustrukturyzowany wpis. Zbudowana przy użyciu technologii React i Tailwind CSS.
 
+> 🚀 **Live Demo:** [voice-symptom-logger.machala.dev](https://voice-symptom-logger.machala.dev/)
+
 ## 1. Problem
 Aplikacja ułatwia notowanie objawów osobom starszym lub osłabionym. Dyktowanie głosowe znacząco minimalizuje konieczność pisania na klawiaturze, co w przypadku pogorszonego samopoczucia, osłabienia lub problemów z motoryką bywa dla użytkownika trudne, a czasem wręcz niemożliwe.
 
